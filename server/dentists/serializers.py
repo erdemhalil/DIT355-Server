@@ -1,16 +1,18 @@
-from types import coroutine
-from rest_framework import serializers
+from rest_framework import fields, serializers
 
-from .models import Dentist, Coordinate
+from .models import Coordinate, Dentist, Openinghours
 
 class CoordinateSerializer(serializers.ModelSerializer): 
-    class Meta: 
+    class Meta:
         model = Coordinate
+        fields =  '__all__'
+
+class OpeninghoursSerializer(serializers.ModelSerializer): 
+    class Meta:
+        model = Openinghours
         fields = '__all__'
 
-
 class DentistSerializer(serializers.ModelSerializer): 
-    coordinate = {}
     class Meta: 
         model = Dentist
         fields = '__all__'

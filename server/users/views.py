@@ -1,6 +1,6 @@
-from django.shortcuts import render
 from rest_framework.decorators import api_view
-from  rest_framework.response import Response
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import User
 from .serializer import UserSerielizer
@@ -15,14 +15,19 @@ def viewUsers(request):
 
 @api_view(['GET'])
 def viewUser(request, key):
-    user = User.objects.get(id=key)
-    serializer = UserSerielizer(user, many=False)
-    return Response(serializer.data)
+    try:
+        user = User.objects.get(id=key)
+        serializer = UserSerielizer(user, many=False)
+        return Response(serializer.data)
+    except User.DoesNotExist:
+        return Response('User not found.', status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['DELETE'])
 def deleteUser(request, key):
-    user = User.objects.get(id=key)
-    user.delete()
-        #add errorhandling 
-    return Response('User deleted succsesfully!')
+    try:
+        user = User.objects.get(id=key)
+        user.delete()
+        return Response('User deleted succsesfully!')
+    except User.DoesNotExist:
+        return Response('User does not exist.', status=status.HTTP_404_NOT_FOUND)
 
