@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+import json, urllib.request
 
 from .models import Dentist, Coordinate, Openinghours
 from .serializers import DentistSerializer, CoordinateSerializer, OpeninghoursSerializer
@@ -53,6 +54,7 @@ def viewDentist(request, key):
 
 @api_view(['POST'])
 def addDentist(request):
+    print(request.data)
     try:
         if 'coordinate' in request.data:
             coordinates = request.data.pop('coordinate')
@@ -95,3 +97,30 @@ def addOpenings(request):
         serializer = OpeninghoursSerializer(opennings)
         return serializer.data.get('id')
     return serializer.errors
+
+
+def initiateDentists(request):
+    try:
+        if 'coordinate' in request:
+            coordinates = request.pop('coordinate')
+            coordinate = addCoordinate(coordinates)
+            request['coordinate'] = coordinate
+        if 'openinghours' in request:
+            openings = request.pop('openinghours')
+            openinghours = addOpenings(openings)
+            request['openinghours'] = openinghours
+        serializer = DentistSerializer(data=request)
+        if serializer.is_valid():
+            dentist = serializer.save()
+            serializer = DentistSerializer(dentist)
+            return 
+        return 
+    except Exception as e:
+        return 
+
+with urllib.request.urlopen('https://raw.githubusercontent.com/feldob/dit355_2020/master/dentists.json') as url:
+    data = json.loads(url.read().decode())
+    dentistData = data.pop('dentists')
+    Dentist.objects.all().delete()
+    for i in dentistData:
+        initiateDentists(i)
