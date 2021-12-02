@@ -17,14 +17,12 @@ def viewDentists(request):
         coordinates = Coordinate.objects.get(id=key)
         coordinate = CoordinateSerializer(coordinates, many=False)
         result = coordinate.data
-        result.pop('id')
         i['coordinate'] = result
     for i in serializer.data:
         key = i.pop('openinghours')
         openinghour = Openinghours.objects.get(id=key)
         openinghours = OpeninghoursSerializer(openinghour, many=False)
         result = openinghours.data
-        result.pop('id')
         i['openinghours'] = result
     return Response(serializer.data)
 
@@ -36,7 +34,6 @@ def viewDentist(request, key):
         cKey = serializer.pop('coordinate')
         coordinates = Coordinate.objects.get(id=cKey)
         coordinate = CoordinateSerializer(coordinates, many=False).data
-        coordinate.pop('id')
         serializer['coordinate'] = coordinate
         oKey = serializer.pop('openinghours')
         openinghour = Openinghours.objects.get(id=oKey)
@@ -54,7 +51,6 @@ def viewDentist(request, key):
 
 @api_view(['POST'])
 def addDentist(request):
-    print(request.data)
     try:
         if 'coordinate' in request.data:
             coordinates = request.data.pop('coordinate')
@@ -72,6 +68,33 @@ def addDentist(request):
         return Response(serializer.errors)
     except Exception as e:
         return Response('Something went wrong ' + e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def patchDentist(request, key):
+    try:
+        dentist = Dentist.objects.get(id=key)
+        tSerializer = DentistSerializer(dentist).data
+        if "coordinate" in request.data:
+            coordinate = request.data.pop('coordinate')
+            cKey = tSerializer.pop('coordinate')
+            coordiantes = Coordinate.objects.get(id=cKey)
+            cSerializer = CoordinateSerializer(coordiantes, data=coordinate, partial=True)
+            if cSerializer.is_valid():
+                cSerializer.save()
+        if "openinghours" in request.data:
+            opening = request.data.pop('openinghours')
+            oKey = tSerializer.pop('openinghours')
+            openings = Openinghours.objects.get(id=oKey)
+            oSerializer = OpeninghoursSerializer(openings, data=opening, partial=True)
+            if oSerializer.is_valid():
+                oSerializer.save()
+        serializer = DentistSerializer(dentist, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response('Exception: Wrong Parameters', status=status.HTTP_400_BAD_REQUEST)
+    except:
+        return Response('Bad Request', status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 def deleteDentist(request, key):

@@ -6,5 +6,6 @@ urlpatterns = [
     path('dentist-detail/<str:key>/', views.viewDentist, name='view-dentist'),
     path('dentist-create/', views.addDentist, name='add-dentist'),
     path('dentist-delete/<str:key>/', views.deleteDentist, name='delete-dentist'),
+    path('dentist-patch/<str:key>/', views.patchDentist, name='patch-dentist'),
 ]
 
