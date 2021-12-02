@@ -3,15 +3,16 @@ from django.db import models
 # Create your models here.
 
 class Coordinate(models.Model):
-    longitude = models.FloatField(default=None)
-    latitude = models.FloatField(default=None)
+    longitude = models.FloatField(blank=True)
+    latitude = models.FloatField(blank=True)
 
 class Openinghours(models.Model):
-    monday = models.TimeField(default=None)
-    tuesday = models.TimeField(default=None)
-    wednesday = models.TimeField(default=None)
-    thursday = models.TimeField(default=None)
-    friday = models.TimeField(default=None)
+    monday = models.CharField(blank=True, max_length=150)
+    tuesday = models.CharField(blank=True, max_length=150)
+    wednesday = models.CharField(blank=True, max_length=150)
+    thursday = models.CharField(blank=True, max_length=150)
+    friday = models.CharField(blank=True, max_length=150)
+    timestaken = models.CharField(blank=True, null=True, default=None, max_length=150)
 
 class Dentist(models.Model): 
     name = models.CharField(max_length=150)
