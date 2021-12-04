@@ -34,6 +34,15 @@ def addAppointment(request):
     except Exception as e:
         return Response('Something went wrong ' + e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['POST'])
+def patchAppointment(request, key):
+    appointment = Appointment.objects.get(id=key)
+    serializer = AppointmentSerializer(appointment, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['DELETE'])
 def deleteAppointment(request, key):
     try:
