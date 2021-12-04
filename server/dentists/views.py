@@ -145,5 +145,7 @@ with urllib.request.urlopen('https://raw.githubusercontent.com/feldob/dit355_202
     data = json.loads(url.read().decode())
     dentistData = data.pop('dentists')
     Dentist.objects.all().delete()
+    Openinghours.objects.all().delete()
+    Coordinate.objects.all().delete()
     for i in dentistData:
         initiateDentists(i)
