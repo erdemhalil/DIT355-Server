@@ -12,14 +12,9 @@ class UserTestCase(APITestCase):
 
     def test_authenticate(self):
         data = {"email": "test@gmail.com", "first_name": "Test_name", "last_name": "test_last", "password": "password_test123"}
-        self.client.post("/api/register/", data)
+        self.client.post("/api/users/register/", data)
         
         data = {"email": "test@gmail.com", "password": "password_test123"}
-        response = self.client.post("/api/authenticate/", data)
+        response = self.client.post("/api/users/token/", data)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(response.data["access"]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_company(self):
-        self.test_authenticate()
-        response = self.client.get("/api/company/")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
