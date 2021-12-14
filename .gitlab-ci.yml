@@ -1,11 +1,11 @@
 default:
   image: ubuntu:20.04
   before_script:
-    - apt -y update
-    - apt -y install apt-utils
-    - apt -y install net-tools python3.8
-    - apt -y upgrade
-    - python -m pip install --upgrade pip
+    #- apt -y update
+    #- apt -y install apt-utils
+    #- apt -y install net-tools python3.8
+    #- apt -y upgrade
+    #- python -m pip install --upgrade pip
     - pip3 install -r requirements.txt
 
 
