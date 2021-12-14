@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 import json, urllib.request
+import os
 
 from .models import Dentist, Coordinate, Openinghours
 from .serializers import DentistSerializer, CoordinateSerializer, OpeninghoursSerializer
@@ -142,10 +143,12 @@ def initiateDentists(request):
         return 
 
 with urllib.request.urlopen('https://raw.githubusercontent.com/feldob/dit355_2020/master/dentists.json') as url:
-    data = json.loads(url.read().decode())
-    dentistData = data.pop('dentists')
-    Dentist.objects.all().delete()
-    Openinghours.objects.all().delete()
-    Coordinate.objects.all().delete()
-    for i in dentistData:
-        initiateDentists(i)
+    if os.path.exists('./db.sqlite3'): 
+        if os.path.getsize('./db.sqlite3') > 0:
+            data = json.loads(url.read().decode())
+            dentistData = data.pop('dentists')
+            Dentist.objects.all().delete()
+            Openinghours.objects.all().delete()
+            Coordinate.objects.all().delete()
+            for i in dentistData:
+                initiateDentists(i)
