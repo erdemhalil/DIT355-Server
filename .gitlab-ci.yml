@@ -1,0 +1,27 @@
+default:
+  image: ubuntu:20.04
+  before_script:
+    #- apt -y update
+    #- apt -y install apt-utils
+    #- apt -y install net-tools python3.8
+    #- apt -y upgrade
+    #- python -m pip install --upgrade pip
+    - cd server
+    - pip3 install djangorestframework-simplejwt==4.4.0
+    - pip3 install -r requirements.txt
+
+
+migrations:
+  stage: build
+  script:
+    - python3 manage.py makemigrations
+    - python3 manage.py migrate
+    - python3 manage.py check
+
+
+django-tests:
+  stage: test
+  script:
+    - python3 server/manage.py test dentists
+    - python3 server/manage.py test users
+    - python3 server/manage.py test appointments

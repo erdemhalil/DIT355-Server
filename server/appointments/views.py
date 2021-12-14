@@ -26,7 +26,7 @@ def viewAppointment(request, key):
 def addAppointment(request):
     try:
         serializer = AppointmentSerializer(data=request.data)
-        if serializer.is_valid:
+        if serializer.is_valid():
             appointment = serializer.save()
             serializer = AppointmentSerializer(appointment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
