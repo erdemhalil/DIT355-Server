@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-import json, urllib.request
+import json, urllib.request, math
 import os
 
 from .models import Dentist, Coordinate, Openinghours
@@ -131,6 +131,15 @@ def initiateDentists(request):
             request['coordinate'] = coordinate
         if 'openinghours' in request:
             openings = request.pop('openinghours')
+            timestaken = ''
+            for i in openings:
+                start = int(openings.get(i).split('-')[0].split(':')[0])
+                end = int(openings.get(i).split('-')[1].split(':')[0])
+                lunchTime = math.floor((start + end)/2)
+                lunch = str(lunchTime) + (":00, %s:30") % (lunchTime)
+                fika = str(math.floor((lunchTime + end)/2)) + (":00")
+                timestaken += "%s: %s, %s. " % (i, lunch, fika)
+            openings["timestaken"] = timestaken
             openinghours = addOpenings(openings)
             request['openinghours'] = openinghours
         serializer = DentistSerializer(data=request)
