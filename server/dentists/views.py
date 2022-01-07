@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import json, urllib.request, math
 import os
-
+from appointments.models import Appointment
 from .models import Dentist, Coordinate, Openinghours
 from .serializers import DentistSerializer, CoordinateSerializer, OpeninghoursSerializer
 
@@ -156,6 +156,7 @@ with urllib.request.urlopen('https://raw.githubusercontent.com/feldob/dit355_202
         if os.path.getsize('./db.sqlite3') > 0:
             data = json.loads(url.read().decode())
             dentistData = data.pop('dentists')
+            Appointment.objects.all().delete()
             Dentist.objects.all().delete()
             Openinghours.objects.all().delete()
             Coordinate.objects.all().delete()

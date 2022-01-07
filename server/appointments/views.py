@@ -1,38 +1,32 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
+from rest_framework import permissions
 from appointments.models import Appointment
-from appointments.serializer import AppointmentSerializer
+from appointments.serializer import AppointmentSerializer, AppointmentReadSerializer
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
 @api_view(['GET'])
 def viewAppointments(request):
     appointments = Appointment.objects.all()
-    serializer = AppointmentSerializer(appointments, many=True)
+    serializer = AppointmentReadSerializer(appointments, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def viewAppointment(request, key):
     try:
-        appointment = Appointment.objects.get(id=key)
-        serializer  = AppointmentSerializer(appointment, many=False).data
+        appointment = Appointment.objects.filter(dentist=key)
+        serializer  = AppointmentSerializer(appointment, many=True).data
         return Response(serializer)
     except Appointment.DoesNotExist:
         return Response('Appointment does not exist', status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['POST'])
-def addAppointment(request):
-    try:
-        serializer = AppointmentSerializer(data=request.data)
-        if serializer.is_valid():
-            appointment = serializer.save()
-            serializer = AppointmentSerializer(appointment)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors)
-    except Exception as e:
-        return Response('Something went wrong ' + e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def patchAppointment(request, key):
@@ -52,4 +46,16 @@ def deleteAppointment(request, key):
     except Appointment.DoesNotExist:
         return Response('Appointment does not exist.', status=status.HTTP_404_NOT_FOUND)
 
-    
+
+class AppointmentsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        request.data['user'] = request.user.pk
+        print(request.user)
+        serializer = AppointmentSerializer(data=request.data)
+        if serializer.is_valid():
+            appointment = serializer.save()
+            serializer = AppointmentSerializer(appointment)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors)
