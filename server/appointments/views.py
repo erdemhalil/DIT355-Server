@@ -59,3 +59,11 @@ class AppointmentsView(APIView):
             serializer = AppointmentSerializer(appointment)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors)
+
+class UserAppointmentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        data = Appointment.objects.filter(user=request.user)
+        serializer = AppointmentSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
