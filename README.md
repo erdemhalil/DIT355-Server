@@ -18,7 +18,7 @@ You can install them by clicking on the according option below (you'll be redire
 
     `cd .\server\server`
 
-2.To get the server running you need to create an environment for python, this can be done by these following commands for your given system:
+2. To get the server running you need to create an environment for python, this can be done by these following commands for your given system:
 
 **MacOS:**
     `python -m venv env` &&
