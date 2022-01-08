@@ -138,7 +138,7 @@ def initiateDentists(request):
                 lunchTime = math.floor((start + end)/2)
                 lunch = str(lunchTime) + (":00, %s:30") % (lunchTime)
                 fika = str(math.floor((lunchTime + end)/2)) + (":00")
-                timestaken += "%s: %s, %s. " % (i, lunch, fika)
+                timestaken += "%s: %s, %s." % (i.capitalize(), lunch, fika)
             openings["timestaken"] = timestaken
             openinghours = addOpenings(openings)
             request['openinghours'] = openinghours
@@ -151,6 +151,9 @@ def initiateDentists(request):
     except Exception as e:
         return 
 
+#As per the TA's reccomendation, we pull the dentist data from the link everytime we start the server. 
+#Because of this we need to delete everything connected to the dentists every time the server is restarted to avoid breaking the database. 
+#Removing the code bellow would allow the satate of the database to be persistant.
 with urllib.request.urlopen('https://raw.githubusercontent.com/feldob/dit355_2020/master/dentists.json') as url:
     if os.path.exists('./db.sqlite3'): 
         if os.path.getsize('./db.sqlite3') > 0:
