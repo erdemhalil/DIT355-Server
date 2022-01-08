@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('list/', views.viewAppointments, name='view-appointments'),
+    path('list/user/', views.UserAppointmentView.as_view(), name='view-appointment-for-user'),
     path('detail/<str:key>/', views.viewAppointment, name='view-appointment'),
     path('', views.AppointmentsView.as_view(), name='create-appointment'),
     path('delete/<str:key>/', views.deleteAppointment, name='delete-appointment'),
